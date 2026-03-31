@@ -5,7 +5,7 @@ import * as bcrypt from 'bcryptjs';
 const AUTH_KEY = 'travel_organizer_auth';
 const ALLOWED_USERNAME = 'namarab';
 const ALLOWED_PASSWORD_HASH =
-  '$2b$10$3jjHqeIOS7Jy6Oov9oly1eEF6jE2sg/sDpM4Wz1mSwvDkOBITrMke';
+  '$2b$10$Xa4Mi21Q01xDGmysNEMJ8uxa33rXO4HG1h.W9Kke16w7AEz8ibuK6';
 
 interface StoredAuth {
   loggedIn: boolean;
