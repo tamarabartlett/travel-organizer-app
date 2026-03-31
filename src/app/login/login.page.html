@@ -1,0 +1,37 @@
+<ion-content class="ion-padding">
+  <div class="login-container">
+    <h1>Travel Organizer</h1>
+    <p class="subtitle">Sign in to continue</p>
+
+    <form (ngSubmit)="login()" class="login-form">
+      <ion-item>
+        <ion-label position="stacked">Username</ion-label>
+        <ion-input
+          type="text"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Enter your username"
+          autocomplete="username"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Password</ion-label>
+        <ion-input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        ></ion-input>
+      </ion-item>
+
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      <ion-button type="submit" expand="block" [disabled]="!username.trim() || !password.trim()">
+        Log in
+      </ion-button>
+    </form>
+  </div>
+</ion-content>

@@ -1,27 +1,416 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.main-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  height: 100%;
+  min-height: 0;
+  gap: 0;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.trip-list-panel {
+  background: var(--ion-color-light);
+  border-right: 1px solid var(--ion-color-light-shade);
+  padding: 1rem 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+.trip-list-section {
+  min-height: 50%;
+  flex-shrink: 0;
+}
 
-  color: #8c8c8c;
+.panel-title {
+  margin: 0 1rem 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-text-color);
+}
 
+.archived-title {
+  margin-top: 0.5rem;
+}
+
+.empty-hint {
+  margin: 1rem;
+  color: var(--ion-color-medium);
+  font-size: 0.95rem;
+}
+
+.trip-list {
+  background: transparent;
+}
+
+.trip-list ion-item {
+  --background: transparent;
+  cursor: pointer;
+}
+
+.trip-list ion-item.selected {
+  --background: var(--ion-color-primary-tint);
+  font-weight: 600;
+}
+
+.trip-list ion-item h3 {
+  font-weight: 600;
+}
+
+.trip-detail-panel {
+  padding: 0.5rem 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Condensed trip sheet - fit without scrolling */
+.trip-sheet-condensed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: none;
+  flex: 1;
+  min-height: 0;
+}
+
+.trip-sheet-condensed .sheet-top-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+}
+
+.trip-sheet-condensed .sheet-days-row {
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+.trip-sheet-condensed .sheet-days-title {
+  margin-bottom: 0.25rem;
+}
+
+.trip-sheet-condensed .sheet-days-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.trip-sheet-condensed .sheet-day-cell {
+  min-width: 6rem;
+  max-width: 8rem;
+  flex: 1 1 6rem;
+}
+
+.trip-sheet-condensed .sheet-day-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  margin-bottom: 0.15rem;
+}
+
+.trip-sheet-condensed .day-plan-textarea {
+  --min-height: 32px;
+  min-height: 32px;
+}
+
+.trip-sheet-condensed .day-plan-textarea textarea {
+  min-height: 32px !important;
+  font-size: 0.75rem;
+}
+
+.trip-sheet-condensed .sheet-days-empty {
   margin: 0;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
 }
 
-#container a {
-  text-decoration: none;
+.trip-sheet-condensed .sheet-cols-four {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 1fr 1fr;
+  gap: 0.35rem 0.75rem;
+  flex: 1;
+  min-height: 0;
+  align-content: start;
+}
+
+.trip-sheet-condensed .sheet-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem 0.75rem;
+  flex: 1;
+  min-height: 0;
+  align-content: start;
+}
+
+.trip-sheet-condensed .sheet-notes-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.75rem;
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--ion-color-light-shade);
+}
+
+.trip-sheet-condensed .sheet-notes-row .sheet-col {
+  border-bottom: none;
+}
+
+.trip-sheet-condensed .sheet-col {
+  margin-bottom: 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+.trip-sheet-condensed .sheet-section-title {
+  margin: 0 0 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+.trip-sheet-condensed .sheet-fields .sheet-row {
+  margin-bottom: 0.15rem;
+}
+
+.trip-sheet-condensed .sheet-row {
+  margin-bottom: 0.15rem;
+  gap: 0.35rem;
+}
+
+.trip-sheet-condensed .sheet-row .sheet-label {
+  flex: 0 0 2.5rem;
+  font-size: 0.7rem;
+  color: var(--ion-color-medium);
+}
+
+.trip-sheet-condensed ion-input,
+.trip-sheet-condensed ion-textarea {
+  --padding-top: 0.2rem;
+  --padding-bottom: 0.2rem;
+  --padding-start: 0.35rem;
+  --min-height: 24px;
+  font-size: 0.8rem;
+}
+
+.trip-sheet-condensed .condensed-textarea {
+  --min-height: 36px;
+  min-height: 36px;
+}
+
+.trip-sheet-condensed .condensed-textarea textarea {
+  min-height: 36px !important;
+}
+
+.trip-sheet-condensed .trip-actions {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.trip-sheet-condensed .trip-actions ion-button {
+  font-size: 0.8rem;
+  --padding-top: 0.35rem;
+  --padding-bottom: 0.35rem;
+}
+
+@media (max-width: 1000px) {
+  .trip-sheet-condensed .sheet-cols-four {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .trip-sheet-condensed .sheet-top-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .trip-sheet-condensed .sheet-cols-four {
+    grid-template-columns: 1fr;
+  }
+  .trip-sheet-condensed .sheet-notes-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tam's Travel sheet layout (PDF-style) - legacy */
+.trip-sheet {
+  max-width: 42rem;
+}
+
+.trip-sheet .trip-event-row {
+  margin-bottom: 0.75rem;
+}
+
+.trip-sheet .trip-event-row .sheet-label {
+  flex: 0 0 5rem;
+}
+
+.sheet-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+.sheet-section:last-of-type {
+  border-bottom: none;
+}
+
+.sheet-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+.sheet-section-title .to-from {
+  font-weight: 500;
+  color: var(--ion-color-medium);
+}
+
+.sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.sheet-row .sheet-label {
+  flex: 0 0 7rem;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+.sheet-row ion-input,
+.sheet-row ion-textarea {
+  flex: 1;
+  --padding-start: 0.75rem;
+}
+
+.sheet-row.notes-row {
+  align-items: flex-start;
+}
+
+.sheet-row.notes-row .sheet-label {
+  padding-top: 0.75rem;
+}
+
+.sheet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .sheet-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.trip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ion-color-light-shade);
+}
+
+/* New trip modal */
+.full-trip-modal .new-trip-content {
+  --padding-bottom: 2rem;
+}
+
+.new-trip-sheet .sheet-section {
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+.new-trip-sheet ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.trip-list ion-item .trip-date {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.detail-section {
+  margin-bottom: 1.5rem;
+}
+
+.detail-section h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--ion-color-primary);
+  font-weight: 600;
+}
+
+.detail-section ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.empty-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  text-align: center;
+  color: var(--ion-color-medium);
+}
+
+.empty-detail ion-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-detail p {
+  margin: 0 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .trip-list-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--ion-color-light-shade);
+    max-height: 40vh;
+  }
+
+  .trip-detail-panel {
+    padding: 1rem;
+  }
+}
+
+// Import flight portal modal
+.import-hint {
+  margin: 0 0 1rem;
+  color: var(--ion-text-color);
+  font-size: 0.95rem;
+}
+.import-file-btn {
+  margin-bottom: 1rem;
+}
+.import-or {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium-shade);
+}
+.import-paste {
+  --background: var(--ion-color-light);
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+.import-error-msg {
+  color: var(--ion-color-danger);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
 }

@@ -1,0 +1,39 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  max-width: 24rem;
+  margin: 0 auto;
+}
+
+.login-container h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 2rem;
+  text-align: center;
+  color: var(--ion-color-medium);
+  font-size: 0.95rem;
+}
+
+.login-form ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 0.5rem;
+}
+
+.login-form ion-button {
+  margin-top: 1.5rem;
+}
+
+.error-message {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem;
+  color: var(--ion-color-danger);
+  font-size: 0.9rem;
+}

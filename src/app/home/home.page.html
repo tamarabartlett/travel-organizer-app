@@ -1,20 +1,257 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Travel Organizer</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openImportPortal()">
+        <ion-icon name="document-attach-outline"></ion-icon>
+        Import flight
+      </ion-button>
+      <ion-button (click)="openNewTrip()">
+        <ion-icon name="add-circle"></ion-icon>
+        New trip
+      </ion-button>
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Log out
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="main-layout">
+    <aside class="trip-list-panel">
+      <div class="trip-list-section">
+        <h2 class="panel-title">My trips</h2>
+        @if (activeTrips.length === 0) {
+          <p class="empty-hint">No trips yet. Create one to get started.</p>
+        } @else {
+          <ion-list lines="full" class="trip-list">
+            @for (trip of activeTrips; track trip.id) {
+              <ion-item-sliding>
+                <ion-item
+                  button
+                  [class.selected]="selectedTrip?.id === trip.id"
+                  (click)="selectTrip(trip)"
+                >
+                  <ion-label>
+                    <h3>{{ trip.event || 'Untitled trip' }}</h3>
+                    @if (trip.location) {
+                      <p>{{ trip.location }}</p>
+                    }
+                    @if (trip.beginDate || trip.endDate) {
+                      <p class="trip-date">{{ trip.beginDate | date:'mediumDate' }}{{ trip.beginDate && trip.endDate ? ' – ' : '' }}{{ trip.endDate | date:'mediumDate' }}</p>
+                    }
+                  </ion-label>
+                </ion-item>
+                <ion-item-options side="end">
+                  <ion-item-option color="danger" (click)="deleteTrip(trip)">
+                    <ion-icon name="trash"></ion-icon>
+                    Delete
+                  </ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+            }
+          </ion-list>
+        }
+      </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+      <h2 class="panel-title archived-title">Archived Trips</h2>
+      @if (archivedTrips.length === 0) {
+        <p class="empty-hint">No archived trips.</p>
+      } @else {
+        <ion-list lines="full" class="trip-list archived-list">
+          @for (trip of archivedTrips; track trip.id) {
+            <ion-item-sliding>
+              <ion-item
+                button
+                [class.selected]="selectedTrip?.id === trip.id"
+                (click)="selectTrip(trip)"
+              >
+                <ion-label>
+                  <h3>{{ trip.event || 'Untitled trip' }}</h3>
+                  @if (trip.location) {
+                    <p>{{ trip.location }}</p>
+                  }
+                  @if (trip.beginDate || trip.endDate) {
+                    <p class="trip-date">{{ trip.beginDate | date:'mediumDate' }}{{ trip.beginDate && trip.endDate ? ' – ' : '' }}{{ trip.endDate | date:'mediumDate' }}</p>
+                  }
+                </ion-label>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="danger" (click)="deleteTrip(trip)">
+                  <ion-icon name="trash"></ion-icon>
+                  Delete
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          }
+        </ion-list>
+      }
+    </aside>
+
+    <main class="trip-detail-panel">
+      @if (selectedTrip) {
+        <div class="trip-sheet trip-sheet-condensed">
+          <div class="sheet-top-row">
+            <div class="sheet-row">
+              <span class="sheet-label">Event</span>
+              <ion-input [(ngModel)]="selectedTrip.event" (ngModelChange)="saveTrip()" placeholder="e.g. training in Ogden"></ion-input>
+            </div>
+            <div class="sheet-row">
+              <span class="sheet-label">Location</span>
+              <ion-input [(ngModel)]="selectedTrip.location" (ngModelChange)="saveTrip()" placeholder="e.g. Ogden"></ion-input>
+            </div>
+            <div class="sheet-row">
+              <span class="sheet-label">Begin</span>
+              <ion-input type="date" [(ngModel)]="selectedTrip.beginDate" (ngModelChange)="saveTrip()"></ion-input>
+            </div>
+            <div class="sheet-row">
+              <span class="sheet-label">End</span>
+              <ion-input type="date" [(ngModel)]="selectedTrip.endDate" (ngModelChange)="saveTrip()"></ion-input>
+            </div>
+          </div>
+
+          <div class="sheet-days-row">
+            <h2 class="sheet-section-title sheet-days-title">Days</h2>
+            <div class="sheet-days-list">
+              @for (day of getTripDays(); track day.date) {
+                <div class="sheet-day-cell">
+                  <span class="sheet-day-label">{{ day.label }}</span>
+                  <ion-textarea
+                    [ngModel]="getDayPlan(day.date)"
+                    (ngModelChange)="setDayPlan(day.date, $event)"
+                    placeholder="What's happening..."
+                    rows="2"
+                    class="condensed-textarea day-plan-textarea"
+                  ></ion-textarea>
+                </div>
+              }
+              @if (getTripDays().length === 0) {
+                <p class="sheet-days-empty">Set Begin date (and optional End date) to see days.</p>
+              }
+            </div>
+          </div>
+
+          <div class="sheet-cols sheet-cols-four">
+            <section class="sheet-section sheet-col sheet-col-travel">
+              <h2 class="sheet-section-title">Travel To</h2>
+              <div class="sheet-fields">
+                <div class="sheet-row"><span class="sheet-label">Airline</span><ion-input [(ngModel)]="selectedTrip.arrivalFlight.airline" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Flight #</span><ion-input [(ngModel)]="selectedTrip.arrivalFlight.flightNumber" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">From</span><ion-input [(ngModel)]="selectedTrip.arrivalFlight.departingAirport" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">To</span><ion-input [(ngModel)]="selectedTrip.arrivalFlight.arrivingAirport" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Conf #</span><ion-input [(ngModel)]="selectedTrip.arrivalFlight.confirmationNumber" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Dep</span><ion-input type="datetime-local" [(ngModel)]="selectedTrip.arrivalFlight.departureTime" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Arr</span><ion-input type="datetime-local" [(ngModel)]="selectedTrip.arrivalFlight.arrivalTime" (ngModelChange)="saveTrip()"></ion-input></div>
+              </div>
+            </section>
+            <section class="sheet-section sheet-col sheet-col-travel">
+              <h2 class="sheet-section-title">Travel From</h2>
+              <div class="sheet-fields">
+                <div class="sheet-row"><span class="sheet-label">Airline</span><ion-input [(ngModel)]="selectedTrip.returnFlight.airline" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Flight #</span><ion-input [(ngModel)]="selectedTrip.returnFlight.flightNumber" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">From</span><ion-input [(ngModel)]="selectedTrip.returnFlight.departingAirport" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">To</span><ion-input [(ngModel)]="selectedTrip.returnFlight.arrivingAirport" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Conf #</span><ion-input [(ngModel)]="selectedTrip.returnFlight.confirmationNumber" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Dep</span><ion-input type="datetime-local" [(ngModel)]="selectedTrip.returnFlight.departureTime" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Arr</span><ion-input type="datetime-local" [(ngModel)]="selectedTrip.returnFlight.arrivalTime" (ngModelChange)="saveTrip()"></ion-input></div>
+              </div>
+            </section>
+            <section class="sheet-section sheet-col">
+              <h2 class="sheet-section-title">Lodging</h2>
+              <div class="sheet-fields">
+                <div class="sheet-row"><span class="sheet-label">Where</span><ion-input [(ngModel)]="selectedTrip.lodging.where" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">With</span><ion-input [(ngModel)]="selectedTrip.lodging.withWhom" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Res</span><ion-input [(ngModel)]="selectedTrip.lodging.reservation" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Addr</span><ion-input [(ngModel)]="selectedTrip.lodging.address" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Conf #</span><ion-input [(ngModel)]="selectedTrip.lodging.confirmationNumber" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Notes</span><ion-input [(ngModel)]="selectedTrip.lodging.notes" (ngModelChange)="saveTrip()"></ion-input></div>
+              </div>
+            </section>
+            <section class="sheet-section sheet-col">
+              <h2 class="sheet-section-title">Car</h2>
+              <div class="sheet-fields">
+                <div class="sheet-row"><span class="sheet-label">Co</span><ion-input [(ngModel)]="selectedTrip.car.company" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Res#</span><ion-input [(ngModel)]="selectedTrip.car.reservation" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Type</span><ion-input [(ngModel)]="selectedTrip.car.type" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Days</span><ion-input [(ngModel)]="selectedTrip.car.days" (ngModelChange)="saveTrip()"></ion-input></div>
+                <div class="sheet-row"><span class="sheet-label">Loc</span><ion-input [(ngModel)]="selectedTrip.car.location" (ngModelChange)="saveTrip()"></ion-input></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="sheet-notes-row">
+            <section class="sheet-section sheet-col">
+              <h2 class="sheet-section-title">Richo notes</h2>
+              <ion-textarea [(ngModel)]="selectedTrip.richoNotes" (ngModelChange)="saveTrip()" placeholder="..." rows="2" class="condensed-textarea"></ion-textarea>
+            </section>
+            <section class="sheet-section sheet-col">
+              <h2 class="sheet-section-title">Sid notes</h2>
+              <ion-textarea [(ngModel)]="selectedTrip.sidNotes" (ngModelChange)="saveTrip()" placeholder="..." rows="2" class="condensed-textarea"></ion-textarea>
+            </section>
+          </div>
+
+          <div class="trip-actions">
+            <ion-button (click)="saveTrip()">Save</ion-button>
+            <ion-button (click)="openImportPortal()">
+              <ion-icon name="document-attach-outline"></ion-icon>
+              Import flight
+            </ion-button>
+            <ion-button fill="outline" color="danger" (click)="deleteTrip(selectedTrip)">
+              <ion-icon name="trash"></ion-icon>
+              Delete
+            </ion-button>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-detail">
+          <ion-icon name="airplane"></ion-icon>
+          <p>Select a trip from the list or create a new one.</p>
+          <ion-button (click)="openNewTrip()">
+            <ion-icon name="add"></ion-icon>
+            New trip
+          </ion-button>
+        </div>
+      }
+    </main>
   </div>
+
 </ion-content>
+
+<!-- Import flight portal modal -->
+<ion-modal [isOpen]="importPortalOpen" (didDismiss)="importPortalOpen = false">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Import flight information</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeImportPortal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <p class="import-hint">Upload an airline confirmation email (.eml or .html) or paste its content below.</p>
+      <input #importFileInput type="file" accept=".eml,.html,text/html,text/plain" (change)="onImportFileSelected($event)" style="display: none" />
+      <ion-button expand="block" fill="outline" (click)="importFileInput.click()" class="import-file-btn">
+        <ion-icon name="folder-open-outline"></ion-icon>
+        Choose file
+      </ion-button>
+      <p class="import-or">or paste email content</p>
+      <ion-textarea
+        [(ngModel)]="importPasteContent"
+        placeholder="Paste the full email or HTML here..."
+        rows="6"
+        class="import-paste"
+      ></ion-textarea>
+      @if (importError) {
+        <p class="import-error-msg">{{ importError }}</p>
+      }
+      <ion-button expand="block" (click)="runImport()" [disabled]="importLoading">
+        {{ importLoading ? 'Importing...' : 'Import' }}
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-modal>
